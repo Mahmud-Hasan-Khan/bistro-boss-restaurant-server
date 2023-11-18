@@ -34,6 +34,15 @@ async function run() {
 
     const cartCollection = client.db("bistroDb").collection("carts");
 
+
+    // user related api ---------------start-------------
+
+    // get user
+    app.get('/users', async (req, res) => {
+      const result = await userCollection.find().toArray();
+      res.send(result);
+    })
+
     //create user collection
     app.post('/users', async (req, res) => {
       const user = req.body;
@@ -48,6 +57,29 @@ async function run() {
         res.send(result);
       }
     });
+
+    // delete user api 
+    app.delete('/users/:id', async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: new ObjectId(id) }
+      const result = await userCollection.deleteOne(query);
+      res.send(result)
+    })
+
+    // update user role
+    app.patch('/updateUserRole/:id', async (req, res) => {
+      const id = req.params.id;
+      const filter = { _id: new ObjectId(id) };
+      const updateDoc = {
+        $set: {
+          role: 'admin'
+        }
+      }
+      const result = await userCollection.updateOne(filter, updateDoc);
+      res.send(result);
+    })
+
+    // user related api ---------------end-------------
 
     app.get('/menu', async (req, res) => {
       const result = await menuCollection.find().toArray();
@@ -80,7 +112,7 @@ async function run() {
       res.send(result);
     });
 
-    // delete cart api endpoint
+    // delete cart api 
     app.delete('/carts/:id', async (req, res) => {
       const id = req.params.id;
       const query = { _id: new ObjectId(id) }
