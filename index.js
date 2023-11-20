@@ -69,10 +69,9 @@ async function run() {
       next();
     }
 
-    // user related api ---------------start-------------
 
     // get user
-    app.get('/users', verifyToken, async (req, res) => {
+    app.get('/users', verifyToken, verifyAdmin, async (req, res) => {
       const result = await userCollection.find().toArray();
       res.send(result);
     });
@@ -109,7 +108,7 @@ async function run() {
     });
 
     // delete user api 
-    app.delete('/users/:id', async (req, res) => {
+    app.delete('/users/:id', verifyToken, verifyAdmin, async (req, res) => {
       const id = req.params.id;
       const query = { _id: new ObjectId(id) }
       const result = await userCollection.deleteOne(query);
@@ -117,7 +116,7 @@ async function run() {
     })
 
     // update user role
-    app.patch('/updateUserRole/:id', async (req, res) => {
+    app.patch('/updateUserRole/:id', verifyToken, verifyAdmin, async (req, res) => {
       const id = req.params.id;
       const filter = { _id: new ObjectId(id) };
       const updateDoc = {
